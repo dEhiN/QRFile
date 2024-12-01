@@ -98,19 +98,7 @@ def create_qr(b64_str: str):
 
 if __name__ == "__main__":
     file = get_file()
-    print(file)
-
-    input("Press enter key to continue...")
-
     read_data = read_file(file)
-    print(f"\n{read_data}")
-
-    input("Press enter key to continue...")
-
     converted_data = encode_file(read_data)
-    print(f"\n{converted_data}")
-
-    input("Press enter key to continue...")
-
     qr = create_qr(converted_data)
     print(f"\n{qr.show()}")
