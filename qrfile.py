@@ -123,7 +123,11 @@ def generate_bytesio(qr_code: segno.QRCode):
 
     Args:
         qr_code (segno.QRCode): A QRCode object created by the module segno
+
+    Returns:
+        io.BytesIO: The QR object saved into a IO stream using the BytesIO class
     """
+    buffer = io.BytesIO()
     qr_code.save(
         buffer,
         kind="png",
@@ -133,6 +137,24 @@ def generate_bytesio(qr_code: segno.QRCode):
         light=QR_LIGHT,
         data_light=QR_DATA_LIGHT,
     )
+    buffer.seek(0)
+    return buffer
+
+
+@app.route("/")
+def route_home():
+    return fl.render_template("index.html", qr=qr)
+
+
+@app.route("/pretty")
+def route_pretty():
+    buff = generate_bytesio(qr)
+    return fl.send_file(buff, mimetype="image/png")
+
+
+@app.route("/save")
+def route_save():
+    save_qr(qr)
 
 
 if __name__ == "__main__":
