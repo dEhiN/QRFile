@@ -103,7 +103,7 @@ def create_qr(b64_str: str):
 
 
 def save_qr(qr_code: segno.QRCode):
-    """Function to save the QR code
+    """Function to save the QR code as a file
 
     Args:
         qr_code (segno.QRCode): A QRCode object created by the module segno
@@ -155,11 +155,13 @@ def route_pretty():
 @app.route("/save")
 def route_save():
     save_qr(qr)
+    buff = generate_bytesio(qr)
+    return fl.send_file(buff, as_attachment=True, download_name="file.png", mimetype="image/png")
 
 
 if __name__ == "__main__":
-    file = get_file()
-    read_data = read_file(file)
-    converted_data = encode_file(read_data)
+    file_name = get_file()
+    file_data = read_file(file_name)
+    converted_data = encode_file(file_data)
     qr = create_qr(converted_data)
     app.run(debug=True)
