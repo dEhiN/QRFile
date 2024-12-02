@@ -11,6 +11,7 @@ QR_DARK = "#e4b5a2"
 QR_DATA_DARK = "#40cbd4"
 QR_LIGHT = "#16161e"
 QR_DATA_LIGHT = "#d6d8df"
+TEST_FILENAME = "README.md"
 
 
 def error_handling(e: Exception = None):
@@ -50,7 +51,7 @@ def read_file(file_name: str):
     This function will read in a file
 
     Args:
-        file_name (str): The file to open as a string with the full absolute path
+        file_name (str): The file to open as a string
 
     Returns:
         bytes: A byte stream of the file that's been read in
@@ -151,39 +152,37 @@ def route_qr():
     return fl.render_template("qr_code.html", qr=qr)
 
 
-@app.route("/qr/user", methods=["POST", "GET"])
+@app.route("/qr/upload", methods=["POST", "GET"])
 def route_qr_user():
     if fl.request.method == "POST":
         form_file_name = "userfile"
         if form_file_name not in fl.request.files:
             return fl.redirect(fl.url_for("route_home"))
 
-        returned_file = fl.request.files["userfile"]
+        user_file = fl.request.files["userfile"]
+        usr_file_name = user_file.filename
 
-        if returned_file.filename == "":
+        if usr_file_name == "":
             return fl.redirect(fl.url_for("route_home"))
 
-        returned_file.save(wu.secure_filename(returned_file.filename))
+        user_file.save(wu.secure_filename(usr_file_name))
 
     return fl.redirect("/qr")
 
 
-@app.route("/pretty")
-def route_pretty():
-    buff = generate_bytesio(qr)
+@app.route("/qr/pretty")
+def route_qr_pretty():
     return fl.send_file(buff, mimetype="image/png")
 
 
 @app.route("/save")
 def route_save():
-    save_qr(qr)
-    buff = generate_bytesio(qr)
     return fl.send_file(buff, as_attachment=True, download_name="file.png", mimetype="image/png")
 
 
 if __name__ == "__main__":
-    file_name = get_file()
-    file_data = read_file(file_name)
+    file_data = read_file(TEST_FILENAME)
     converted_data = encode_file(file_data)
     qr = create_qr(converted_data)
+    buff = generate_bytesio(qr)
     app.run(debug=True)
