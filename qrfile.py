@@ -110,7 +110,7 @@ def save_qr(qr_code: segno.QRCode):
         qr_code (segno.QRCode): A QRCode object created by the module segno
     """
     qr_code.save(
-        "file.png",
+        "static/file.png",
         scale=QR_SCALE,
         dark=QR_DARK,
         data_dark=QR_DATA_DARK,
@@ -149,7 +149,7 @@ def route_home():
 
 @app.route("/qr")
 def route_qr():
-    return fl.render_template("qr_code.html", qr=qr)
+    return fl.render_template("qr-code.html", qr=qr)
 
 
 @app.route("/qr/upload", methods=["POST", "GET"])
@@ -172,17 +172,22 @@ def route_qr_user():
 
 @app.route("/qr/pretty")
 def route_qr_pretty():
-    return fl.send_file(buff, mimetype="image/png")
+    return fl.render_template("qr-code-pretty.html", qr=fl.url_for("static", filename="file.png"))
 
 
 @app.route("/save")
 def route_save():
-    return fl.send_file(buff, as_attachment=True, download_name="file.png", mimetype="image/png")
+    return fl.send_file(
+        fl.url_for("static", "file.png"),
+        as_attachment=True,
+        download_name="file.png",
+        mimetype="image/png",
+    )
 
 
 if __name__ == "__main__":
     file_data = read_file(TEST_FILENAME)
     converted_data = encode_file(file_data)
     qr = create_qr(converted_data)
-    buff = generate_bytesio(qr)
+    save_qr(qr)
     app.run(debug=True)
