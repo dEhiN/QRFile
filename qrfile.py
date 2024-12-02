@@ -169,4 +169,5 @@ if __name__ == "__main__":
     file_data = read_file(file_name)
     converted_data = encode_file(file_data)
     qr = create_qr(converted_data)
+    print(os.getcwd())
     app.run(debug=True)
