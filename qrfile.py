@@ -95,15 +95,35 @@ def create_qr(b64_str: str):
     """
     qr_code = segno.make_qr(b64_str)
 
-    buff = io.BytesIO()
-    segno.make(b64_str, micro=False).save(
-        buff, kind="png", scale=4, dark="darkblue", data_dark="#474747", light="#efefef"
-    )
-    buff.seek(0)
-    # send_file(buff, mimetype="image/png")
-    print(buff)
-
     return qr_code
+
+
+def generate_bytesio(qr_code: segno.QRCode):
+    """Function to generate a BytesIO object from the QR code passed in
+
+    Args:
+        qr_code (segno.QRCode): A QRCode object created by the module segno
+    """
+    buffer = io.BytesIO()
+    qr_code.save(buffer, kind="png", scale=4, dark="darkblue", data_dark="#474747", light="#efefef")
+    buffer.seek(0)
+    # send_file(buff, mimetype="image/png")
+
+
+def save_qr(qr_code: segno.QRCode):
+    """Function to save the QR code
+
+    Args:
+        qr_code (segno.QRCode): A QRCode object created by the module segno
+    """
+    qr_code.save(
+        "file.png",
+        scale=3,
+        dark="#e4b5a2",
+        data_dark="#40cbd4",
+        light="#16161e",
+        data_light="#d6d8df",
+    )
 
 
 if __name__ == "__main__":
@@ -111,4 +131,5 @@ if __name__ == "__main__":
     read_data = read_file(file)
     converted_data = encode_file(read_data)
     qr = create_qr(converted_data)
-    print(f"\n{qr.show()}")
+    # generate_bytesio(qr)
+    save_qr(qr)
