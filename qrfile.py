@@ -1,7 +1,7 @@
 # A script to read in a file of the user's choosing and generate a QR code for that file
 
 import os.path, sys, io
-import pybase64, segno
+import pybase64, segno, jinja2
 import tkinter.filedialog as file_chooser, flask as fl
 
 app = fl.Flask(__name__)
