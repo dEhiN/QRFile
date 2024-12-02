@@ -143,7 +143,12 @@ def generate_bytesio(qr_code: segno.QRCode):
 
 @app.route("/")
 def route_home():
-    return fl.render_template("index.html", qr=qr)
+    return fl.render_template("index.html")
+
+
+@app.route("/qr")
+def route_qr():
+    return fl.render_template("qr_code.html", qr=qr)
 
 
 @app.route("/pretty")
