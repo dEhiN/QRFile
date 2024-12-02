@@ -3,8 +3,10 @@
 import os.path
 import tkinter.filedialog as file_chooser
 import sys
+import io
 import pybase64
 import segno
+import flask as fl
 
 
 def error_handling(e: Exception = None):
@@ -92,6 +94,14 @@ def create_qr(b64_str: str):
         QRCode: An object of the QRCode class with the generated QR code
     """
     qr_code = segno.make_qr(b64_str)
+
+    buff = io.BytesIO()
+    segno.make(b64_str, micro=False).save(
+        buff, kind="png", scale=4, dark="darkblue", data_dark="#474747", light="#efefef"
+    )
+    buff.seek(0)
+    # send_file(buff, mimetype="image/png")
+    print(buff)
 
     return qr_code
 
