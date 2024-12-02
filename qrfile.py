@@ -1,12 +1,16 @@
 # A script to read in a file of the user's choosing and generate a QR code for that file
 
-import os.path
-import tkinter.filedialog as file_chooser
-import sys
-import io
-import pybase64
-import segno
-import flask as fl
+import os.path, sys, io
+import pybase64, segno
+import tkinter.filedialog as file_chooser, flask as fl
+
+app = fl.Flask(__name__)
+
+QR_SCALE = 3
+QR_DARK = "#e4b5a2"
+QR_DATA_DARK = "#40cbd4"
+QR_LIGHT = "#16161e"
+QR_DATA_LIGHT = "#d6d8df"
 
 
 def error_handling(e: Exception = None):
@@ -98,18 +102,6 @@ def create_qr(b64_str: str):
     return qr_code
 
 
-def generate_bytesio(qr_code: segno.QRCode):
-    """Function to generate a BytesIO object from the QR code passed in
-
-    Args:
-        qr_code (segno.QRCode): A QRCode object created by the module segno
-    """
-    buffer = io.BytesIO()
-    qr_code.save(buffer, kind="png", scale=4, dark="darkblue", data_dark="#474747", light="#efefef")
-    buffer.seek(0)
-    # send_file(buff, mimetype="image/png")
-
-
 def save_qr(qr_code: segno.QRCode):
     """Function to save the QR code
 
@@ -118,11 +110,28 @@ def save_qr(qr_code: segno.QRCode):
     """
     qr_code.save(
         "file.png",
-        scale=3,
-        dark="#e4b5a2",
-        data_dark="#40cbd4",
-        light="#16161e",
-        data_light="#d6d8df",
+        scale=QR_SCALE,
+        dark=QR_DARK,
+        data_dark=QR_DATA_DARK,
+        light=QR_LIGHT,
+        data_light=QR_DATA_LIGHT,
+    )
+
+
+def generate_bytesio(qr_code: segno.QRCode):
+    """Function to generate a BytesIO object from the QR code passed in
+
+    Args:
+        qr_code (segno.QRCode): A QRCode object created by the module segno
+    """
+    qr_code.save(
+        buffer,
+        kind="png",
+        scale=QR_SCALE,
+        dark=QR_DARK,
+        data_dark=QR_DATA_DARK,
+        light=QR_LIGHT,
+        data_light=QR_DATA_LIGHT,
     )
 
 
@@ -131,5 +140,4 @@ if __name__ == "__main__":
     read_data = read_file(file)
     converted_data = encode_file(read_data)
     qr = create_qr(converted_data)
-    # generate_bytesio(qr)
-    save_qr(qr)
+    app.run(debug=True)
