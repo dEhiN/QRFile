@@ -1,8 +1,8 @@
 # A script to read in a file of the user's choosing and generate a QR code for that file
 
 import os.path, sys, io
-import pybase64, segno, jinja2
-import tkinter.filedialog as file_chooser, flask as fl
+import pybase64, segno
+import tkinter.filedialog as file_chooser, flask as fl, werkzeug.utils as wu
 
 app = fl.Flask(__name__)
 
@@ -151,6 +151,23 @@ def route_qr():
     return fl.render_template("qr_code.html", qr=qr)
 
 
+@app.route("/qr/user", methods=["POST", "GET"])
+def route_qr_user():
+    if fl.request.method == "POST":
+        form_file_name = "userfile"
+        if form_file_name not in fl.request.files:
+            return fl.redirect(fl.url_for("route_home"))
+
+        returned_file = fl.request.files["userfile"]
+
+        if returned_file.filename == "":
+            return fl.redirect(fl.url_for("route_home"))
+
+        returned_file.save(wu.secure_filename(returned_file.filename))
+
+    return fl.redirect("/qr")
+
+
 @app.route("/pretty")
 def route_pretty():
     buff = generate_bytesio(qr)
@@ -169,5 +186,4 @@ if __name__ == "__main__":
     file_data = read_file(file_name)
     converted_data = encode_file(file_data)
     qr = create_qr(converted_data)
-    print(os.getcwd())
     app.run(debug=True)
